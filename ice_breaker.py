@@ -1,24 +1,42 @@
+import os
+from dotenv import load_dotenv
 from langchain_core.prompts import PromptTemplate
-from langchain.chat_models import ChatOpenAI
-from langchain.chains import LLMChain
+from langchain_google_genai import ChatGoogleGenerativeAI
 
-information = ""
+# Load environment variables from .env file
+load_dotenv()
+
+# Ensure the GOOGLE_API_KEY is set
+if not os.getenv("GOOGLE_API_KEY"):
+    raise ValueError("❌ Missing GOOGLE_API_KEY! Please set it in your environment.")
+
+information = """John Doe is a software engineer with 5+ years of experience specializing in backend development. 
+He has worked with Python, Django, and FastAPI to build scalable web applications. 
+John is currently a senior engineer at TechCorp, where he leads a team in developing cloud-based solutions. 
+He is passionate about AI, open-source contributions, and mentoring junior developers."""
 
 if __name__ == "__main__":
-    print("Hello Langchain!")
+    print("Hello Google Gemini!")
 
+    # Define the prompt template
     summary_template = """
-        Given the information {information} about a person, create:
+        Given the LinkedIn information {information} about a person, create:
         1. A short summary.
         2. Two interesting facts about them.
     """
 
-    summary_prompt_template = PromptTemplate(
+    # Create the PromptTemplate
+    summary_prompt = PromptTemplate(
         input_variables=["information"], template=summary_template
     )
 
-    llm = ChatOpenAI(temperature=0, model_name="gpt-3.5-turbo")
+    # Initialize the ChatGoogleGenerativeAI model
+    llm = ChatGoogleGenerativeAI(model="gemini-pro", temperature=0)
 
-    chain = LLMChain(llm=llm, prompt=summary_prompt_template)
+    # Create a runnable sequence
+    response = summary_prompt | llm
 
-    print(chain.run(information=information))
+    # Invoke the sequence with the provided information
+    result = response.invoke({"information": information})
+
+    print(result)
