@@ -1,31 +1,25 @@
-from langchain_core.prompts import PromptTemplate
-from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.agents import initialize_agent, Tool, AgentType
+from langchain_google_genai import ChatGoogleGenerativeAI
 from tools.tools import get_search_url
 
 
 def lookup(name: str) -> str:
-
+    """LangChain agent that finds a Wikipedia URL for a given person."""
     llm = ChatGoogleGenerativeAI(model="gemini-pro", temperature=0)
-    template = """given the full name {name_of_person} I want you to get it me a link to their wiki search deatil page.
-                your answer should contain only a URL"""
-
     tools_for_agent = [
         Tool(
-            name="Crawl Google wikipedia for person detail",
+            name="Crawl Google Wikipedia for person detail",
             func=get_search_url,
-            description="Useful for when you need to get detail about people wikipedia URL",
+            description="Useful for getting a person's Wikipedia URL.",
         )
     ]
 
     agent = initialize_agent(
-        tools=tools_for_agent, agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION, verbose=True
+        tools=tools_for_agent,
+        agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
+        llm=llm,  # ✅ Pass LLM here
+        verbose=True,
     )
 
-    prompt_template = PromptTemplate(
-        template=template, input_variables=["name_of_person"]
-    )
-
-    wikipedia_search_url = agent.run(prompt_template.format_prompt(name_of_person=name))
-
+    wikipedia_search_url = agent.run(name)
     return wikipedia_search_url
