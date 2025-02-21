@@ -1,6 +1,7 @@
 from langchain_core.prompts import PromptTemplate
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.agents import initialize_agent, Tool, AgentType
+from tools.tools import get_search_url
 
 
 def lookup(name: str) -> str:
@@ -12,7 +13,7 @@ def lookup(name: str) -> str:
     tools_for_agent = [
         Tool(
             name="Crawl Google wikipedia for person detail",
-            func="?",
+            func=get_search_url,
             description="Useful for when you need to get detail about people wikipedia URL",
         )
     ]
