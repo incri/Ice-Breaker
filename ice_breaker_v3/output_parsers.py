@@ -22,4 +22,6 @@ class PersonIntel(BaseModel):
         }
 
 
-person_intel_perser = PydanticOutputParser(pydantic_object=PersonIntel)
+person_intel_perser: PydanticOutputParser = PydanticOutputParser(
+    pydantic_object=PersonIntel
+)

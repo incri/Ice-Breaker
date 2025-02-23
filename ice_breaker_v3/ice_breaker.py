@@ -4,6 +4,7 @@ from wikipedia_scraper import get_wikipedia_data
 from langchain_core.prompts import PromptTemplate
 from langchain_google_genai import ChatGoogleGenerativeAI
 from agents.wiki_lookup_agents import lookup
+from output_parsers import person_intel_perser
 
 # Load environment variables
 load_dotenv()
@@ -20,18 +21,23 @@ def generate_summary(person_name: str):
     llm = ChatGoogleGenerativeAI(model="gemini-pro", temperature=0)
 
     summary_template = """
-        Given the following Wikipedia information about {person_name}, create:
+        Given the following Wikipedia information  Wikipedia Info: {information} about {person_name}, create:
         1. A short summary.
         2. Two interesting facts about them.
         3. Two topic that may intrest them.
         4. Two creative Ice breakers to open a coversations with them.
 
-        Wikipedia Info:
-        {information}
+       \n{format_instructions}
+
+
     """
 
     summary_prompt = PromptTemplate(
-        input_variables=["person_name", "information"], template=summary_template
+        input_variables=["person_name", "information"],
+        template=summary_template,
+        partial_variables={
+            "format_instructions": person_intel_perser.get_format_instructions()
+        },
     )
 
     # Fetch Wikipedia data
