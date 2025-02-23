@@ -4,6 +4,7 @@ from wikipedia_scraper import get_wikipedia_data
 from langchain_core.prompts import PromptTemplate
 from langchain_google_genai import ChatGoogleGenerativeAI
 from agents.wiki_lookup_agents import lookup
+from output_parsers import person_intel_perser, PersonIntel
 
 # Load environment variables
 load_dotenv()
@@ -15,22 +16,28 @@ if not os.getenv("GOOGLE_API_KEY") or not os.getenv("SERPAPI_API_KEY"):
     )
 
 
-# 🧠 Generate AI-based Summary
-def generate_summary(person_name: str):
+def generate_summary(person_name: str) -> PersonIntel:
     """Fetch Wikipedia data and generate a summary using Gemini AI."""
     llm = ChatGoogleGenerativeAI(model="gemini-pro", temperature=0)
 
     summary_template = """
-        Given the following Wikipedia information about {person_name}, create:
+        Given the following Wikipedia information  Wikipedia Info: {information} about {person_name}, create:
         1. A short summary.
         2. Two interesting facts about them.
+        3. Two topic that may intrest them.
+        4. Two creative Ice breakers to open a coversations with them.
 
-        Wikipedia Info:
-        {information}
+       \n{format_instructions}
+
+
     """
 
     summary_prompt = PromptTemplate(
-        input_variables=["person_name", "information"], template=summary_template
+        input_variables=["person_name", "information"],
+        template=summary_template,
+        partial_variables={
+            "format_instructions": person_intel_perser.get_format_instructions()
+        },
     )
 
     # Fetch Wikipedia data
@@ -45,24 +52,11 @@ def generate_summary(person_name: str):
         {"person_name": person_name, "information": wiki_data["summary"]}
     )
 
-    return {
-        "person": person_name,
-        "summary": result,
-        "image": wiki_data["thumbnail"],
-    }
+    # Format output as plain text
+    return f"Summary of {person_name}:\n\n{result.content}"
 
 
 if __name__ == "__main__":
     person = "Donald Trump"
-
-    print("🔍 Searching for Wikipedia URL...")
-    wikipedia_url = lookup(person)
-    print(f"✅ Found Wikipedia URL: {wikipedia_url}")
-
-    print("\n📄 Fetching Wikipedia Data...")
-    wiki_data = get_wikipedia_data(person)
-    print(f"📝 Wikipedia Summary: {wiki_data['summary'][:300]}...")
-
-    print("\n🧠 Generating AI-based Summary...")
     final_summary = generate_summary(person)
-    print(f"\n🎯 Final Summary:\n{final_summary}")
+    print(final_summary)
