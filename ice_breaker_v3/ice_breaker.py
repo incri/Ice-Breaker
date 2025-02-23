@@ -4,7 +4,7 @@ from wikipedia_scraper import get_wikipedia_data
 from langchain_core.prompts import PromptTemplate
 from langchain_google_genai import ChatGoogleGenerativeAI
 from agents.wiki_lookup_agents import lookup
-from output_parsers import person_intel_perser
+from output_parsers import person_intel_perser, PersonIntel
 
 # Load environment variables
 load_dotenv()
@@ -16,7 +16,7 @@ if not os.getenv("GOOGLE_API_KEY") or not os.getenv("SERPAPI_API_KEY"):
     )
 
 
-def generate_summary(person_name: str):
+def generate_summary(person_name: str) -> PersonIntel:
     """Fetch Wikipedia data and generate a summary using Gemini AI."""
     llm = ChatGoogleGenerativeAI(model="gemini-pro", temperature=0)
 
