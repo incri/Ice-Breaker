@@ -1,0 +1,24 @@
+from fastapi import APIRouter, HTTPException
+from typing import Dict, Optional
+from ice_breaker import generate_summary
+
+router = APIRouter()
+
+
+@router.get("/summary/{person_name}", response_model=Dict[str, Optional[str]])
+async def get_summary(person_name: str):
+    """
+    API endpoint to fetch Wikipedia summary and image for a given person.
+
+    Args:
+        person_name (str): Name of the person.
+
+    Returns:
+        Dict[str, Optional[str]]: A dictionary containing summary and thumbnail URL.
+    """
+    summary, thumbnail_url = generate_summary(person_name)
+
+    if summary is None:
+        raise HTTPException(status_code=404, detail="Person not found on Wikipedia.")
+
+    return {"summary": summary, "thumbnail": thumbnail_url}

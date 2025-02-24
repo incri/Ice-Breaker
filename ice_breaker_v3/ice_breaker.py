@@ -5,7 +5,7 @@ from langchain_core.prompts import PromptTemplate
 from langchain_google_genai import ChatGoogleGenerativeAI
 from agents.wiki_lookup_agents import lookup
 from output_parsers import person_intel_perser, PersonIntel
-from typing import Tuple, Optional
+from typing import Tuple
 
 # Load environment variables
 load_dotenv()
@@ -17,19 +17,20 @@ if not os.getenv("GOOGLE_API_KEY") or not os.getenv("SERPAPI_API_KEY"):
     )
 
 
-def generate_summary(person_name: str) -> Tuple[Optional[PersonIntel], Optional[str]]:
+def generate_summary(person_name: str) -> Tuple[PersonIntel, str]:
     """Fetch Wikipedia data and generate a summary using Gemini AI."""
     llm = ChatGoogleGenerativeAI(model="gemini-pro", temperature=0)
 
     summary_template = """
-        Given the following Wikipedia information:
-        Wikipedia Info: {information} about {person_name}, create:
+        Given the following Wikipedia information  Wikipedia Info: {information} about {person_name}, create:
         1. A short summary.
         2. Two interesting facts about them.
-        3. Two topics that may interest them.
-        4. Two creative icebreakers to open a conversation with them.
+        3. Two topic that may intrest them.
+        4. Two creative Ice breakers to open a coversations with them.
 
        \n{format_instructions}
+
+
     """
 
     summary_prompt = PromptTemplate(
@@ -42,11 +43,10 @@ def generate_summary(person_name: str) -> Tuple[Optional[PersonIntel], Optional[
 
     # Fetch Wikipedia data
     wiki_data = get_wikipedia_data(person_name)
+    thumbnail_url = wiki_data.get("thumbnail")
 
     if "error" in wiki_data:
-        return None, None  # Ensure consistent return type on error
-
-    thumbnail_url = wiki_data.get("thumbnail")
+        return wiki_data["error"]
 
     # Generate response using Gemini
     response = summary_prompt | llm
@@ -54,4 +54,5 @@ def generate_summary(person_name: str) -> Tuple[Optional[PersonIntel], Optional[
         {"person_name": person_name, "information": wiki_data["summary"]}
     )
 
+    # Format output as plain text
     return result.content, thumbnail_url
