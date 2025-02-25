@@ -22,15 +22,18 @@ def generate_summary(person_name: str) -> Tuple[PersonIntel, str]:
     llm = ChatGoogleGenerativeAI(model="gemini-pro", temperature=0)
 
     summary_template = """
-        Given the following Wikipedia information  Wikipedia Info: {information} about {person_name}, create:
-        1. A short summary.
-        2. Two interesting facts about them.
-        3. Two topic that may intrest them.
-        4. Two creative Ice breakers to open a coversations with them.
+        Given the following Wikipedia information about {person_name}:
+        {information}
 
-       \n{format_instructions}
+        Create a structured JSON response containing:
+        - A short summary.
+        - Two interesting facts about them.
+        - Two topics that may interest them.
+        - Two creative icebreakers to start a conversation.
 
+        Respond **ONLY** in valid JSON format without Markdown or code block formatting.
 
+        {format_instructions}
     """
 
     summary_prompt = PromptTemplate(
@@ -54,5 +57,12 @@ def generate_summary(person_name: str) -> Tuple[PersonIntel, str]:
         {"person_name": person_name, "information": wiki_data["summary"]}
     )
 
-    # Format output as plain text
-    return result.content, thumbnail_url
+    try:
+        # Ensure proper JSON parsing using the output parser
+        parsed_result = person_intel_perser.parse(result.content)
+    except Exception as e:
+        raise ValueError(
+            f"❌ Failed to parse response: {e}\nResponse: {result.content}"
+        )
+
+    return parsed_result, thumbnail_url
