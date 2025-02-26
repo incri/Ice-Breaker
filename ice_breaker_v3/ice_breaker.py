@@ -66,7 +66,3 @@ def generate_summary(person_name: str) -> Tuple[PersonIntel, str]:
         )
 
     return parsed_result, thumbnail_url
-
-
-result = generate_summary("john cena")
-print(result)
