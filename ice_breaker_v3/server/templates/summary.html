@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wikipedia Summary</title>
+</head>
+<body>
+    <h1>Wikipedia Summary</h1>
+
+    {% if details %}
+        <img src="{{ thumbnail }}" alt="Thumbnail" width="200">
+
+        <h2>Summary</h2>
+        <p>{{ details["summary"] }}</p>
+
+        <h2>Interesting Facts</h2>
+        <ul>
+            {% for fact in details["facts"] %}
+                <li>{{ fact }}</li>
+            {% endfor %}
+        </ul>
+
+        <h2>Topics of Interest</h2>
+        <ul>
+            {% for topic in details["topic_of_interest"] %}
+                <li>{{ topic }}</li>
+            {% endfor %}
+        </ul>
+
+        <h2>Icebreaker Questions</h2>
+        <ul>
+            {% for question in details["ice_breaker"] %}
+                <li>{{ question }}</li>
+            {% endfor %}
+        </ul>
+
+    {% else %}
+        <p>Person not found.</p>
+    {% endif %}
+
+    <a href="/">Go Back</a>
+</body>
+</html>
