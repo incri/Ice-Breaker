@@ -19,7 +19,7 @@ if not os.getenv("GOOGLE_API_KEY") or not os.getenv("SERPAPI_API_KEY"):
 
 def generate_summary(person_name: str) -> Tuple[PersonIntel, str]:
     """Fetch Wikipedia data and generate a summary using Gemini AI."""
-    llm = ChatGoogleGenerativeAI(model="gemini-pro", temperature=0)
+    llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro", temperature=0)
 
     summary_template = """
         Given the following Wikipedia information about {person_name}:
@@ -66,3 +66,7 @@ def generate_summary(person_name: str) -> Tuple[PersonIntel, str]:
         )
 
     return parsed_result, thumbnail_url
+
+
+result = generate_summary("john cena")
+print(result)
