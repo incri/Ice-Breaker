@@ -3,7 +3,6 @@ from dotenv import load_dotenv
 from wikipedia_scraper import get_wikipedia_data
 from langchain_core.prompts import PromptTemplate
 from langchain_google_genai import ChatGoogleGenerativeAI
-from agents.wiki_lookup_agents import lookup
 from output_parsers import person_intel_perser, PersonIntel
 from typing import Tuple
 
