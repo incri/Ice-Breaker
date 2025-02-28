@@ -4,41 +4,54 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wikipedia Summary</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in {
+            animation: fadeIn 1s ease-in-out;
+        }
+    </style>
 </head>
-<body>
-    <h1>Wikipedia Summary</h1>
+<body class="bg-gradient-to-r from-indigo-500 to-purple-700 flex items-center justify-center min-h-screen p-4">
+    <div class="bg-white/20 backdrop-blur-md p-8 rounded-lg shadow-lg max-w-2xl w-full text-center fade-in">
+        <h1 class="text-4xl font-bold text-white mb-6">Wikipedia Summary</h1>
+        
+        {% if details %}
+            <div class="mb-6">
+                <img src="{{ thumbnail }}" alt="Thumbnail" class="w-48 h-48 mx-auto rounded-lg shadow-lg">
+            </div>
+            
+            <h2 class="text-2xl text-white font-semibold">Summary</h2>
+            <p class="text-white bg-white/10 p-4 rounded-lg shadow-md">{{ details["summary"] }}</p>
+            
+            <h2 class="text-2xl text-white font-semibold mt-4">Interesting Facts</h2>
+            <ul class="text-white bg-white/10 p-4 rounded-lg shadow-md">
+                {% for fact in details["facts"] %}
+                    <li class="py-1">✅ {{ fact }}</li>
+                {% endfor %}
+            </ul>
+            
+            <h2 class="text-2xl text-white font-semibold mt-4">Topics of Interest</h2>
+            <ul class="text-white bg-white/10 p-4 rounded-lg shadow-md">
+                {% for topic in details["topic_of_interest"] %}
+                    <li class="py-1">📌 {{ topic }}</li>
+                {% endfor %}
+            </ul>
+            
+            <h2 class="text-2xl text-white font-semibold mt-4">Icebreaker Questions</h2>
+            <ul class="text-white bg-white/10 p-4 rounded-lg shadow-md">
+                {% for question in details["ice_breaker"] %}
+                    <li class="py-1">💬 {{ question }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="text-white bg-red-500 p-4 rounded-lg shadow-md">Person not found.</p>
+        {% endif %}
 
-    {% if details %}
-        <img src="{{ thumbnail }}" alt="Thumbnail" width="200">
-
-        <h2>Summary</h2>
-        <p>{{ details["summary"] }}</p>
-
-        <h2>Interesting Facts</h2>
-        <ul>
-            {% for fact in details["facts"] %}
-                <li>{{ fact }}</li>
-            {% endfor %}
-        </ul>
-
-        <h2>Topics of Interest</h2>
-        <ul>
-            {% for topic in details["topic_of_interest"] %}
-                <li>{{ topic }}</li>
-            {% endfor %}
-        </ul>
-
-        <h2>Icebreaker Questions</h2>
-        <ul>
-            {% for question in details["ice_breaker"] %}
-                <li>{{ question }}</li>
-            {% endfor %}
-        </ul>
-
-    {% else %}
-        <p>Person not found.</p>
-    {% endif %}
-
-    <a href="/">Go Back</a>
+        <a href="/" class="mt-6 inline-block bg-white text-purple-600 font-semibold px-6 py-2 rounded-lg hover:bg-purple-700 hover:text-white transition-all shadow-lg">Go Back</a>
+    </div>
 </body>
 </html>
