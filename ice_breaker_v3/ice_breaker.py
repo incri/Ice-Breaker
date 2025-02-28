@@ -10,10 +10,8 @@ from typing import Tuple
 load_dotenv()
 
 # Ensure API keys are set
-if not os.getenv("GOOGLE_API_KEY") or not os.getenv("SERPAPI_API_KEY"):
-    raise ValueError(
-        "❌ Missing API keys! Set GOOGLE_API_KEY and SERPAPI_API_KEY in .env."
-    )
+if not os.getenv("GOOGLE_API_KEY"):
+    raise ValueError("❌ Missing API keys! Set GOOGLE_API_KEY in .env.")
 
 
 def generate_summary(person_name: str) -> Tuple[PersonIntel, str]:
